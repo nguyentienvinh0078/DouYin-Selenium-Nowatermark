@@ -1,0 +1,11 @@
+requests==2.22.0
+pyinstaller==4.10
+retrying==1.3.3
+jsons
+autopep8
+requests
+beautifulsoup4
+bs4
+lxml
+selenium
+chromedriver-autoinstaller
