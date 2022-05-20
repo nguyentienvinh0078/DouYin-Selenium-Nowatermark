@@ -137,65 +137,76 @@ class DownloadMultiVideo():
     def get_data(self, url):
         print(f'[ Feedback ]: Bắt đầu lấy dữ liệu video, vui lòng đợi...\r')
         print('-' * 120)
+        retry_get_data_max = 3
+        for retry_data_number in range(retry_get_data_max):
+            try:
+                start = time.time()
+                self.driver = self.init_driver('hide')
+                self.driver.get(url)
 
-        start = time.time()
-        self.driver = self.init_driver('headless')
-        self.driver.get(url)
+                nickname = str(self.driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[2]/div[1]/div[2]/h1/span/span/span/span/span').text)
+                
+                driver_opened = time.time() 
+                driver_open_time = driver_opened - start
 
-        nickname = str(self.driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[2]/div[1]/div[2]/h1/span/span/span/span/span').text)
-        
-        driver_opened = time.time() 
-        driver_open_time = driver_opened - start
+                scroll_pause_time = 1.5 if driver_open_time <= 15 else 2
+                last_scroll_height = 0
 
-        scroll_pause_time = 1.5 if driver_open_time <= 15 else 2
-        last_scroll_height = 0
+                if driver_open_time < 2.5:  
+                    self.driver.close()
+                    self.driver.quit()
+                    continue
+                elif driver_open_time >= 2.5:
+                    while True:
+                        new_scroll_height = self.driver.execute_script('return document.body.scrollHeight')
+                        if new_scroll_height != last_scroll_height:
+                            print('[ Feedback ]: Đang Scroll....')
+                            print('-' * 120)
+                            self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight)')
+                            time.sleep(scroll_pause_time)
+                            last_scroll_height = new_scroll_height
 
-        while True:
-            new_scroll_height = self.driver.execute_script('return document.body.scrollHeight')
-            if new_scroll_height != last_scroll_height:
-                print('[ Feedback ]: Đang Scroll....')
-                print('-' * 120)
-                self.driver.execute_script('window.scrollTo(0, document.body.scrollHeight)')
-                time.sleep(scroll_pause_time)
-                last_scroll_height = new_scroll_height
+                            end_page = self.driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/div/div')
+                            end_text = str(end_page.text)
+                            if end_text != '':
+                                break
+                        else:
+                            break
+                    print('[ Feedback ]: Scroll xong..!')
+                    print('-' * 120)
+                    
+                    video_data = []
+                    video_link_elements = self.driver.find_elements_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/ul/li')
+                    number_of_videos = len(video_link_elements)
+                    jx_url_base = 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids='
+                    self.json_file_path = f'{self.folder_save_path}\{nickname}crawl.json'
 
-                end_page = self.driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/div/div')
-                end_text = str(end_page.text)
-                if end_text != '':
+                    for video_number in range(1, number_of_videos + 1):
+                        result_a_tag = self.driver.find_elements_by_xpath(f'/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/ul/li[{video_number}]/a')
+                        for a_tag in result_a_tag:
+                            video_url = a_tag.get_attribute('href')
+                            video_id = re.findall('video/(\d+)?', video_url)[0]
+                            video_data.append({
+                                'video_number': str(video_number),
+                                'video_id': video_id,
+                                'video_url': video_url,
+                                'video_api': f'{jx_url_base}{video_id}'
+                            })
+                        with open(self.json_file_path, mode='w', encoding='utf-8') as json_file:
+                            json.dump(video_data, json_file, indent=4, separators=(',', ': '))
+                        print("\r" + "[ Feedback ]: Cập nhật {:>2}/{} ".format(video_number, number_of_videos), end='')
+                    print('')
+                    self.driver.close()
+                    self.driver.quit()
+                    end = time.time()
+                    sub_time = end - start
+                    print('-' * 120)
+                    print('[ Feedback ]: Lấy dữ liệu thành công -*- {} Video -*- Thời gian: {:.2f} giây...'.format(number_of_videos, sub_time))
+                    print('-' * 120)
                     break
-            else:
-                break
-        print('[ Feedback ]: Scroll xong..!')
-        print('-' * 120)
-        
-        video_data = []
-        video_link_elements = self.driver.find_elements_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/ul/li')
-        number_of_videos = len(video_link_elements)
-        jx_url_base = 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids='
-        self.json_file_path = f'{self.folder_save_path}\{nickname}crawl.json'
-
-        for video_number in range(1, number_of_videos + 1):
-            result_a_tag = self.driver.find_elements_by_xpath(f'/html/body/div[1]/div/div[2]/div/div/div[4]/div[1]/div[2]/ul/li[{video_number}]/a')
-            for a_tag in result_a_tag:
-                video_url = a_tag.get_attribute('href')
-                video_id = re.findall('video/(\d+)?', video_url)[0]
-                video_data.append({
-                    'video_number': str(video_number),
-                    'video_id': video_id,
-                    'video_url': video_url,
-                    'video_api': f'{jx_url_base}{video_id}'
-                })
-            with open(self.json_file_path, mode='w', encoding='utf-8') as json_file:
-                json.dump(video_data, json_file, indent=4, separators=(',', ': '))
-            print("\r" + "[ Feedback ]: Cập nhật {:>2}/{} ".format(video_number, number_of_videos), end='')
-        print('')
-        self.driver.close()
-        self.driver.quit()
-        end = time.time()
-        sub_time = end - start
-        print('-' * 120)
-        print('[ Feedback ]: Lấy dữ liệu thành công -*- {} Video -*- Thời gian: {:.2f} giây...'.format(number_of_videos, sub_time))
-        print('-' * 120)
+            except Exception as bug:
+                # print(bug)
+                continue
         return video_data
     
     def download(self, video_data):
