@@ -61,7 +61,7 @@ class DownloadMultiVideo():
                 else:
                     print('[ Feedback ]: Tải xuống 1 video!')
                     print('-' * 120)
-                    response = requests.get(url=self.url_input, headers=self.headers)
+                    response = requests.get(url=self.url_input)
                     video_url = response.url
                     video_id = re.findall('video\/(\d+)', video_url)[0]
                     jx_url_base = 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids='
@@ -80,7 +80,7 @@ class DownloadMultiVideo():
     def get_url_input(self):
         for retry_number in range(3):
             print('-' * 120)
-            print('[ Feedback ]: Nhập vào link để tải xuống, Nhập "Close" để thoát!')
+            print('[ Feedback ]: Nhập vào link để tải xuống, Nhập "close" để thoát!')
             print('-' * 120)
             url_input = re.sub("[^\x00-\xff]", '', input('[ Nhập link ]: ')).replace(' ', '')
             print('-' * 120)
@@ -100,7 +100,7 @@ class DownloadMultiVideo():
         return url_input, check_input 
 
     def is_video_link(self, url_input):
-        response = requests.get(url=url_input, headers=self.headers)
+        response = requests.get(url=url_input)
         if '/video/' in url_input or '/video/' in response.url:
             return True
         return False
@@ -220,7 +220,6 @@ class DownloadMultiVideo():
                 print('-' * 120)
                 return 
             
-            # lấy video url không nhãn
             try:
                 video_url_no_watermark = str(js['item_list'][0]['video']['play_addr']['url_list'][0]).replace('playwm', 'play')
             except Exception as bug:
@@ -233,7 +232,8 @@ class DownloadMultiVideo():
             except Exception as bug:
                 #print(bug)
                 create_time = 'no_create_time'
-                # print('[    Lỗi    ]: Không lấy được thời gian tạo video video!\r')
+                print('[    Lỗi    ]: Không lấy được thời gian tạo video video!\r')
+                print('-' * 120)
             
             filename = '{} {}.mp4'.format(create_time, video_data[video_number]['video_id'])
             nickname_path_listdir = os.listdir(folder_nickname_path)
