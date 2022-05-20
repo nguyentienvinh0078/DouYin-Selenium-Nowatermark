@@ -141,7 +141,7 @@ class DownloadMultiVideo():
         for retry_data_number in range(retry_get_data_max):
             try:
                 start = time.time()
-                self.driver = self.init_driver('hide')
+                self.driver = self.init_driver('headless')
                 self.driver.get(url)
 
                 nickname = str(self.driver.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/div/div[2]/div[1]/div[2]/h1/span/span/span/span/span').text)
