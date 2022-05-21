@@ -102,25 +102,25 @@ class TikTok():
         
         while result == [] and index <= 2:
             index += 1
-            print('-' * 150)
+            print('-' * 120)
             print(f'[      Thông báo      ]: Đang lấy dữ liệu lần thứ {index}\r')
             
             response = requests.get(url=api_post_url, headers = self.headers)
             html = json.loads(response.content.decode())
 
             if self.is_end == False:
-                print('-' * 150)
+                print('-' * 120)
                 print(f'[      Nickname       ]: Save Folder: {self.nickname}')
 
                 max_cursor = html['max_cursor']
                 result = html['aweme_list'] 
                 self.next_data(max_cursor)
                 print(f'[      Thông báo      ]: Đã lấy dữ liệu thành công!\r')
-                print('-' * 150)
+                print('-' * 120)
             else:
                 max_cursor = html['max_cursor']
                 print(f'[      Thông báo      ]: Không có dữ liệu trên trang này, bỏ qua...\r')
-                print('-' * 150)
+                print('-' * 120)
                     
         # return result, max_cursor
 
@@ -141,9 +141,9 @@ class TikTok():
                 self.is_end = True
                 return
             index += 1
-            print('-' * 150)
+            print('-' * 120)
             print(f'[      Thông báo      ]: Đang lấy {max_cursor}, lần thứ {index}\r')
-            print('-' * 150)
+            print('-' * 120)
             time.sleep(0.3)
             response = requests.get(url=api_naxt_post_url, headers=self.headers)
             html = json.loads(response.content.decode())
@@ -154,12 +154,12 @@ class TikTok():
                 if result == []:
                     msg_result = 'dữ liệu trống'
                 print(f'[      Thông báo      ]: Dữ  liệu {max_cursor}, {msg_result}!\r')
-                print('-' * 150)
+                print('-' * 120)
                 self.video_information(result, max_cursor)
             else:
                 self.is_end = True
                 print(f'[      Thông báo      ]: Dữ  liệu {max_cursor} lấy không thành công!\r')
-                print('-' * 150)
+                print('-' * 120)
 
     def video_information(self, result, max_cursor):
         video_title_list = []; video_list = []; aweme_id = []; nickname = []
@@ -254,13 +254,13 @@ class TikTok():
                     print(f'-' * 150)
                 except Exception as bug:
                     print(f'[      Cảnh báo       ]: Lỗi khi tải xuống video!')
-                    print('-' * 150)
+                    print('-' * 120)
                     print(f'[         Lỗi         ]: {bug}\r')
-                    print('-' * 150)
+                    print('-' * 120)
             except Exception as bug:
                 print(bug)
                 print(f'[      Thông báo      ]: Không có {len(video_list)} tài nguyên video trên trang này, bỏ qua trang!\r')
-                print('-' * 150)
+                print('-' * 120)
                 break
 
         self.next_data(max_cursor)
@@ -312,13 +312,13 @@ class TikTok():
             print('[    Lỗi    ]: Không lấy được thời gian tạo video video!\r')
             self.create_time = 'No_crate_time '
         
-        print('-' * 150)
+        print('-' * 120)
         print(f'[ Nickname  ]: Save Folder: {self.nickname}')
-        print('-' * 150)
+        print('-' * 120)
         print(f'[ Thông báo ]: Link video không nhãn: {self.video_url}')
-        print('-' * 150)
+        print('-' * 120)
         print(f'[ Thông báo ]: Link douyin page: https://douyin.com/video/{self.video_id}')
-        print('-' * 150)
+        print('-' * 120)
         
         self.file_name = f'{self.create_time}_{self.video_id}.mp4'
 
@@ -331,9 +331,9 @@ class TikTok():
                 time.sleep(0.01)
             print('\r')
             root_dir = os.path.abspath(os.path.dirname(__file__))
-            print('-' * 150)
+            print('-' * 120)
             print(f'[ Thông báo ]: Đường dẫn: -- [ {root_dir}{self.folder_path[1:]}\{self.file_name} ] --\r')
-            print('-' * 150)
+            print('-' * 120)
             return 
         i = 0
         while i < 3:
