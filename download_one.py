@@ -6,7 +6,19 @@ class DouyinDownload():
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Mobile Safari/537.36 Edg/87.0.664.66'
         }
-        self.root_dir = os.path.abspath(os.path.dirname(__file__))
+        if getattr(sys, 'frozen', False):
+            application_path = os.path.dirname(sys.executable)
+            running_mode = 'Frozen/executable'
+        else:
+            try:
+                app_full_path = os.path.realpath(__file__)
+                application_path = os.path.dirname(app_full_path)
+                running_mode = "Non-interactive (e.g. 'python myapp.py')"
+            except NameError:
+                application_path = os.getcwd()
+                running_mode = 'Interactive'
+
+        self.root_dir = application_path
         self.save_folder = ''
         self.url_example = 'https://v.douyin.com/FUS36nS/'
         self.url_input = ''

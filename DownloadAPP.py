@@ -1,4 +1,3 @@
-from concurrent.futures import thread
 import sys
 from tkinter import *
 from tkinter import filedialog 
@@ -124,6 +123,7 @@ class GUI:
         options.add_experimental_option('useAutomationExtension', False)
         options.add_argument('--disable-blink-features=AutomationControlled')
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        
 
         if opt == 'hide':
             options.add_experimental_option('useAutomationExtension', False)

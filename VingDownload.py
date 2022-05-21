@@ -1,4 +1,5 @@
 import os, time, re, requests, json
+import sys
 from urllib import response
 import chromedriver_autoinstaller
 
@@ -17,8 +18,20 @@ class DownloadMultiVideo():
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Mobile Safari/537.36 Edg/87.0.664.66'
         }
+        
+        if getattr(sys, 'frozen', False):
+            application_path = os.path.dirname(sys.executable)
+            running_mode = 'Frozen/executable'
+        else:
+            try:
+                app_full_path = os.path.realpath(__file__)
+                application_path = os.path.dirname(app_full_path)
+                running_mode = "Non-interactive (e.g. 'python myapp.py')"
+            except NameError:
+                application_path = os.getcwd()
+                running_mode = 'Interactive'
 
-        self.root_dir = os.path.abspath(os.path.dirname(__file__))
+        self.root_dir = application_path
         self.url_input = ''
         self.check_input = False
         self.save_folder = ''
@@ -130,8 +143,8 @@ class DownloadMultiVideo():
             "safebrowsing_for_trusted_sources_enabled": False,
             "safebrowsing.enabled": False,
         })
-        chromedriver_autoinstaller.install()
-        driver = webdriver.Chrome(options=options) 
+        
+        driver = webdriver.Chrome(chromedriver_autoinstaller.install(), options=options) 
         return driver
 
     def get_data(self, url):
