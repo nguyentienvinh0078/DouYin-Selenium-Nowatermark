@@ -16,33 +16,16 @@ class TiktokDownload:
 
         if getattr(sys, 'frozen', False):
             application_path = os.path.dirname(sys.executable)
-            running_mode = 'Frozen/executable'
         else:
             try:
-                app_full_path = os.path.realpath(__file__)
-                application_path = os.path.dirname(app_full_path)
-                running_mode = "Non-interactive (e.g. 'python myapp.py')"
+                application_path = os.path.dirname(os.path.realpath(__file__))
             except NameError:
                 application_path = os.getcwd()
-                running_mode = 'Interactive'
 
         self.root_dir = application_path
         self.save_folder = 'TikTok Multi'
-        self.download_page_url = 'https://snaptik.app/vn'
-
-        """
-            URL INPUT
-            # user page link
-            https://www.tiktok.com/@tinaneeeee/video/7098291042625080602?is_copy_url=1&is_from_webapp=v1
-            https://www.tiktok.com/@tinaneeeee
-            
-            # video link
-            https://vt.tiktok.com/ZSdQkfHpf/?k=1
-            https://vt.tiktok.com/ZSdQk9f8J/
-        """
-
         self.url_input = ''; self.check_input = False; self.is_userpage=False; self.user_title='Empty title'
-
+        
         self.auto_downoad()
 
     def auto_downoad(self):
@@ -51,16 +34,8 @@ class TiktokDownload:
             if self.check_input:
                 self.is_userpage, self.user_title, self.url_input = self.check_user_page(self.url_input)
                 self.save_folder = 'Tiktok Multiple' if self.is_userpage else'Tiktok One'
-                self.folder_save_path = f'{self.root_dir}\{self.save_folder}\{self.user_title}'
+                self.folder_save_path = f'{self.root_dir}\{self.save_folder}'
                 self.json_file_path = f'{self.root_dir}\{self.save_folder}\{self.user_title}.json'
-
-                try:
-                    if not os.path.exists(self.folder_save_path):
-                        os.makedirs(self.folder_save_path)
-                except:
-                    print('[ Feedback ]: Lỗi khi tạo thư mục!')
-                    print('-' * 120)
-                    return
                 
                 if self.is_userpage:
                     print('[ Feedback ]: Tải xuống nhiều video!')
@@ -89,15 +64,15 @@ class TiktokDownload:
     def check_user_page(self, url_input):
         if 'www.tiktok.com/@' in url_input:
             if '/video/' in url_input: 
-                return False, re.findall('\/@(.*)', url_input)[0], url_input
+                return False, re.findall('\/@(.*)\/video', url_input)[0], url_input
             else: 
-                return True, re.findall('\/@(.*)', url_input)[0], url_input
+                return True, re.findall('tiktok.com\/@(.*)', url_input.split('?')[0])[0], url_input
         else:
             response = requests.get(url=url_input, headers=self.headers)
             if '/video/' in response.url: 
-                return False, re.findall('\/@(.*)', response.url)[0], response.url
+                return False, re.findall('\/@(.*)\/video', response.url)[0], response.url
             else: 
-                return True, re.findall('\/@(.*)', response.url)[0], response.url
+                return True, re.findall('tiktok.com\/@(.*)', response.url.split('?')[0])[0], response.url
         
     def get_url_input(self):
         retry_max = 3
@@ -190,6 +165,10 @@ class TiktokDownload:
                 'video_url': video_url,
                 'video_api': f"{tiktok_api_link}",
             })
+
+            if not os.path.exists(self.folder_save_path):
+                os.makedirs(self.folder_save_path)
+
             with open(self.json_file_path, mode='w', encoding='utf-8') as json_file:
                 json.dump(video_data, json_file, indent=4, separators=(',', ': '))
             video_number = video_number + 1
