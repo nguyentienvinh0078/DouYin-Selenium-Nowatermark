@@ -17,8 +17,9 @@ class TiktokDownload():
                 application_path = os.getcwd()
 
         self.root_dir = application_path
+        
         self.save_folder = 'TikTok Multi'
-
+     
     def auto_downoad(self):
         while True:
             self.url_input, self.check_input = self.get_url_input()
