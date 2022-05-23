@@ -50,15 +50,11 @@ class GUI:
 
         if getattr(sys, 'frozen', False):
             application_path = os.path.dirname(sys.executable)
-            running_mode = 'Frozen/executable'
         else:
             try:
-                app_full_path = os.path.realpath(__file__)
-                application_path = os.path.dirname(app_full_path)
-                running_mode = "Non-interactive (e.g. 'python myapp.py')"
+                application_path = os.path.dirname(os.path.realpath(__file__))
             except NameError:
                 application_path = os.getcwd()
-                running_mode = 'Interactive'
 
         self.root_dir = application_path
         self.save_folder = 'Douyin One'
@@ -78,13 +74,15 @@ class GUI:
 
         self.progress_frame = self.create_progress_frame()
 
-        self.close_frame = self.create_close_frame()
-        self.close_frame.grid_configure(sticky=E)
-        self.close_btn = self.create_button_form(self.close_frame, self.close_btn_name, self.close_btn_callback)
+        # self.close_frame = self.create_close_frame()
+        # self.close_frame.grid_configure(sticky=E)
+        # self.close_btn = self.create_button_form(self.close_frame, self.close_btn_name, self.close_btn_callback)
 
     def close_btn_callback(self):
+        self.download_thread.join()
         self.window.destroy()
-
+        sys.exit(0)
+        
     def browser_btn_callback(self):
         self.folder_save_path = filedialog.askdirectory()
         if self.folder_save_path != '':
@@ -106,8 +104,8 @@ class GUI:
             self.browser_btn.configure(state='disable', activebackground='lightcoral', activeforeground='white', text='Thư mục')
             self.download_btn.configure(state='disable', bg='lightcoral', fg='white', text='Đang tải')
             self.download_btn.configure(state='disable', activebackground='lightcoral', activeforeground='white', text='Đang tải')
-            self.close_btn.configure(state='disable', bg='lightcoral', fg='white', text='Thoát')
-            self.close_btn.configure(state='disable', activebackground='lightcoral', activeforeground='white', text='Thoát')
+            # self.close_btn.configure(state='disable', bg='lightcoral', fg='white', text='Thoát')
+            # self.close_btn.configure(state='disable', activebackground='lightcoral', activeforeground='white', text='Thoát')
             
             self.message_frame.destroy()
             self.desc_frame.destroy()
@@ -274,8 +272,9 @@ class GUI:
                 nickname = str(js['item_list'][0]['author']['nickname'])
             except Exception as bug:
                 # print(bug)
-                nickname = 'Empty Nickname'
-                messagebox.showinfo('message', '[ Feedback ]: Không tìm được nickname, đặt thành: Empty Nickname!\r')
+                # nickname = 'Empty Nickname'
+                pass
+                # messagebox.showinfo('message', '[ Feedback ]: Không tìm được nickname, đặt thành: Empty Nickname!\r')
 
             try:
                 folder_nickname_path = f'{self.folder_save_path}\{nickname}'
@@ -283,21 +282,22 @@ class GUI:
                     os.makedirs(folder_nickname_path)
             except Exception as bug:
                 # print(bug)
-                messagebox.showinfo('message', f'[ Feedback ]: Không tạo được thư mục {nickname}!\r')
+                # messagebox.showinfo('message', f'[ Feedback ]: Không tạo được thư mục {nickname}!\r')
                 return 
             
             try:
                 video_url_no_watermark = str(js['item_list'][0]['video']['play_addr']['url_list'][0]).replace('playwm', 'play')
             except Exception as bug:
                 #print(bug)
-                messagebox.showinfo('message', '[ Feedback ]: Không lấy được link video không nhãn!\r')
-
+                # messagebox.showinfo('message', '[ Feedback ]: Không lấy được link video không nhãn!\r')
+                pass
+            
             try:
                 create_time = time.strftime("%Y-%m-%d %H.%M.%S", time.localtime(js['item_list'][0]['create_time']))
             except Exception as bug:
                 #print(bug)
                 create_time = 'no_create_time'
-                messagebox.showinfo('message', '[ Feedback ]: Không lấy được thời gian tạo video video!\r')
+                # messagebox.showinfo('message', '[ Feedback ]: Không lấy được thời gian tạo video video!\r')
             
             filename = '{} {}.mp4'.format(create_time, video_data[video_number]['video_id'])
             nickname_path_listdir = os.listdir(folder_nickname_path)
@@ -370,8 +370,11 @@ class GUI:
         self.browser_btn.configure(state='active', activebackground='mediumseagreen', activeforeground='black', text='Thư mục')
         self.download_btn.configure(state='active', bg='mediumseagreen', fg='black', text='Tải xuống')
         self.download_btn.configure(state='active', activebackground='mediumseagreen', activeforeground='black', text='Tải xuống')
-        self.close_btn.configure(state='active', bg='mediumseagreen', fg='black', text='Thoát')
-        self.close_btn.configure(state='active', activebackground='mediumseagreen', activeforeground='black', text='Thoát')
+        # self.close_btn.configure(state='active', bg='mediumseagreen', fg='black', text='Thoát')
+        # self.close_btn.configure(state='active', activebackground='mediumseagreen', activeforeground='black', text='Thoát')
+
+        messagebox.showinfo('message', 'Đã tải xuống xong!')
+
 
     def create_progress(self, frame, progress_name):
         style = Style(self.window)

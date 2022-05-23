@@ -1,4 +1,4 @@
-import os, re, requests, json, time
+import os, re, requests, json, time, sys
 
 class DouyinDownload():
     def __init__(self):
