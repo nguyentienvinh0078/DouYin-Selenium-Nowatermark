@@ -3,6 +3,7 @@ import re, requests, os, sys, json, time
 
 class Check:
     def __init__(self):
+        os.system('cls')
         self.headers = {
             'user-agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Mobile Safari/537.36 Edg/87.0.664.66'
         }
@@ -82,41 +83,42 @@ class Check:
                 return ['TikTok', 'Video', re.findall('/video/(\d+)', real_url)[0]]
                 
     def main(self):
-        os.system('cls')
-        input_url, input_check = self.get_input_url()
-        if input_check:
-            app_type, url_type, data_key = self.input_url_check(input_url)
-            save_folder = os.path.join(self.root_dir, self.download_folder, app_type, url_type)
-            try: 
-                if not os.path.exists(save_folder):
-                    os.makedirs(save_folder)
-            except Exception as bug:
-                print(bug)
-                return
-            video_data = []
-            if 'DouYin' in app_type:
-                if 'Multiple' in url_type:
-                    video_data = self.get_data(app_type, data_key)
-                elif 'Video' in url_type:
-                    douyin_api_link = 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids={}'.format(data_key)
-                    video_data = [{
-                        "video_id": data_key,
-                        "video_url": input_url,
-                        "video_api": douyin_api_link,
-                    }]
-            elif 'TikTok' in app_type:
-                if 'Multiple' in url_type:
-                    video_data = self.get_data(app_type, data_key)
-                elif 'Video' in url_type:
-                    tiktok_api_link = 'https://api.tiktokv.com/aweme/v1/multi/aweme/detail/?aweme_ids=%5B{}%5D'.format(data_key)
-                    video_data = [{
-                        "video_id": data_key,
-                        "video_url": input_url,
-                        "video_api": tiktok_api_link,
-                    }]
+        while True:
+            input_url, input_check = self.get_input_url()
+            if input_check:
+                app_type, url_type, data_key = self.input_url_check(input_url)
+                save_folder = os.path.join(self.root_dir, self.download_folder, app_type, url_type)
+                try: 
+                    if not os.path.exists(save_folder):
+                        os.makedirs(save_folder)
+                except Exception as bug:
+                    print(bug)
+                    return
+                video_data = []
+                if 'DouYin' in app_type:
+                    if 'Multiple' in url_type:
+                        video_data = self.get_data(app_type, data_key)
+                    elif 'Video' in url_type:
+                        douyin_api_link = 'https://www.iesdouyin.com/web/api/v2/aweme/iteminfo/?item_ids={}'.format(data_key)
+                        video_data = [{
+                            "video_id": data_key,
+                            "video_url": input_url,
+                            "video_api": douyin_api_link,
+                        }]
+                elif 'TikTok' in app_type:
+                    if 'Multiple' in url_type:
+                        video_data = self.get_data(app_type, data_key)
+                    elif 'Video' in url_type:
+                        tiktok_api_link = 'https://api.tiktokv.com/aweme/v1/multi/aweme/detail/?aweme_ids=%5B{}%5D'.format(data_key)
+                        video_data = [{
+                            "video_id": data_key,
+                            "video_url": input_url,
+                            "video_api": tiktok_api_link,
+                        }]
 
-        # print('APP_TYPE: {} -- URL_TYPE: {} -- TOLTAL: {}'.format(app_type, url_type, len(video_data)))
-        self.download(save_folder, app_type, video_data)        
+                # print('APP_TYPE: {} -- URL_TYPE: {} -- TOLTAL: {}'.format(app_type, url_type, len(video_data)))
+                self.download(save_folder, app_type, video_data)  
+            else: break      
 
     def request_deal(self, url, max_again=3):
         for req_again in range(max_again):
