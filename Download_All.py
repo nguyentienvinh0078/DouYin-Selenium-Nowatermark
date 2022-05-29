@@ -118,6 +118,8 @@ class Check:
 
                 # print('APP_TYPE: {} -- URL_TYPE: {} -- TOLTAL: {}'.format(app_type, url_type, len(video_data)))
                 self.download(save_folder, app_type, video_data)  
+                os.system('cls')
+                print('[ Feedback ]: Tải xuống hoàn tất {} video'.format(len(video_data)))
             else: break      
 
     def request_deal(self, url, max_again=3):
