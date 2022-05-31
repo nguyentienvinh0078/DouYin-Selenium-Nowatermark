@@ -159,11 +159,11 @@ class Check:
                     for item in item_list_data:
                         video_id = str(item['itemInfos']['id'])
                         user_name = str(item['authorInfos']['uniqueId'])
-                        video_urls = 'https://www.tiktok.com/@{}/video/{}'.format(user_name, video_id)
+                        video_url = 'https://www.tiktok.com/@{}/video/{}'.format(user_name, video_id)
                         tiktok_api_link = 'https://api.tiktokv.com/aweme/v1/multi/aweme/detail/?aweme_ids=%5B{}%5D'.format(video_id)
                         video_data.append({
                             'video_id': video_id,
-                            'video_url': video_urls,
+                            'video_url': video_url,
                             'video_api': tiktok_api_link,
                         })
         elif 'DouYin' in app_type:

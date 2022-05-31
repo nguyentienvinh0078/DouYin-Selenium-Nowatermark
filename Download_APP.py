@@ -15,7 +15,7 @@ class GUI:
         self.window = Tk()
         self.window.title('™✅ V I N G ✅™')
         self.window.resizable(False, False)
-        self.window.configure(bg='black')
+        self.window.configure(bg='#1B9AAA')
 
         self.entry_folder_name = 'entry_folder';    self.browser_btn_name  = 'Thư mục'
         self.entry_link_name   = 'entry_link';      self.download_btn_name = 'Tải xuống'
@@ -37,15 +37,7 @@ class GUI:
         self.path_frame.columnconfigure(1, weight=1)
         self.entry_folder = self.create_entry_form(self.path_frame, self.entry_folder_name)
 
-        if getattr(sys, 'frozen', False):
-            application_path = os.path.dirname(sys.executable)
-        else:
-            try:
-                application_path = os.path.dirname(os.path.realpath(__file__))
-            except NameError:
-                application_path = os.getcwd()
-
-        self.root_dir = application_path
+        self.root_dir = self.get_app_path()
         self.download_folder = 'Download'
         self.entry_folder.insert(END, self.root_dir)
 
@@ -56,10 +48,16 @@ class GUI:
         self.entry_link = self.create_entry_form(self.download_frame, self.entry_link_name)
         self.download_btn = self.create_button_form(self.download_frame, self.download_btn_name, self.download_btn_callback)
 
-        self.message_frame = self.create_message_frame()
-        self.desc_frame = self.create_desc_frame()
-
-        self.progress_frame = self.create_progress_frame()
+    def get_app_path(self):
+        app_path = ''
+        if getattr(sys, 'frozen', False):
+            app_path = os.path.dirname(sys.executable)
+        else:
+            try:
+                app_path = os.path.dirname(os.path.realpath(__file__))
+            except NameError:
+                app_path = os.getcwd()
+        return app_path
 
     def close_btn_callback(self):
         self.download_thread.join()
@@ -363,49 +361,48 @@ class GUI:
         row, col = dict(self.layouts.items())[progress_name]
         progress.grid(row=row, column=col, sticky=NSEW, ipady=2)
         frame.columnconfigure(1,weight=1)
-
         return style, progress
 
     def create_path_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=0, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='#060716')
+        frame.configure(bg='#1B9AAA')
         return frame
 
     def create_download_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=1, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='black')
+        frame.configure(bg='#1B9AAA')
         return frame
 
     def create_message_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=2, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='#060716')
+        frame.configure(bg='#1B9AAA')
         return frame
     
     def create_desc_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=3, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='#060716')
+        frame.configure(bg='#1B9AAA')
         return frame
 
     def create_progress_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=4, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='#060716')
+        frame.configure(bg='#1B9AAA')
         return frame
 
     def create_close_frame(self):
         frame = LabelFrame(self.window, relief='flat')
         frame.grid(row=5, column=0, padx=2, pady=2, sticky=NSEW)
-        frame.configure(bg='#060716')
+        frame.configure(bg='#1B9AAA')
         return frame
 
     def create_label_form(self, frame, label_name, message):
         var = StringVar()
         label = Label(frame, textvariable=var, font='Arial 12 bold', borderwidth=0, justify=CENTER)
-        label.configure(bg='black', fg='white')
+        label.configure(bg='#1B9AAA', fg='white')
         var.set(message)
         row, col = dict(self.layouts.items())[label_name]
         label.grid(row=row, column=col, sticky=NSEW)
@@ -420,7 +417,7 @@ class GUI:
 
     def create_button_form(self, frame, btn_name, callback_func):
         button = Button(frame, text=btn_name, justify=CENTER, command=callback_func)
-        button.configure(borderwidth=1, font='Arial 12 bold', width=10, bg='mediumseagreen')
+        button.configure(borderwidth=1, font='Arial 12 bold', width=10, bg='#06D6A0')
         row, col = dict(self.layouts.items())[btn_name]
         button.grid(row=row, column=col, sticky=NSEW)
         return button
